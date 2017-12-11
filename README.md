@@ -2,6 +2,7 @@
 This repository contains my code for Dog vs Cat Redux challenge
 
 ## Directory Structure
+```
 Project
 |-- datasets
 |   |-- test
@@ -16,6 +17,7 @@ Project
 |-- model.py
 |-- predict.py
 `-- train.py
+```
 
 ## Usage
 Run ```python dataset_clusterer.py``` to make batches of train data and test data and 
