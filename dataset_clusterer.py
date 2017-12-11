@@ -20,8 +20,6 @@ def make_batches_and_save(path, output_path=None, batch_type='train',
     output_path = output_path + '/' + batch_type + '_'
     imgs_list = os.listdir(path)
     np.random.shuffle(imgs_list)
-    np.random.shuffle(imgs_list)
-    np.random.shuffle(imgs_list)
 
     batch_no = 0
     new_batch = []
