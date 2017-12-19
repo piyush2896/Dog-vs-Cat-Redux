@@ -4,12 +4,14 @@ import pandas as pd
 
 def make_sub(file):
     Y = np.load('out.npy')
+    Y = np.clip(Y,0.05, 0.95)
     li = os.listdir('./datasets/test/')
+    li = sorted([int(x.split('.')[0]) for x in li])
     print(len(li))
 
     res = np.zeros((Y.shape[0], 2))
     for i in range(len(li)):
-        res[i, 0] = float(li[i].split('.')[0])
+        res[i, 0] = float(li[i])
         res[i, 1] = Y[i]
 
 
