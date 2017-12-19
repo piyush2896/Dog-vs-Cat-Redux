@@ -13,13 +13,17 @@ def save_to_file(file, X, Y=None):
 
 
 def make_batches_and_save(path, output_path=None, batch_type='train',
-                          batch_size=16, img_shape=(64, 64), shuffle=True):
+                          batch_size=32, img_shape=(64, 64), shuffle=True):
     if output_path == None:
         output_path = path
 
     output_path = output_path + '/' + batch_type + '_'
     imgs_list = os.listdir(path)
-    np.random.shuffle(imgs_list)
+    if batch_type != 'train':
+        imgs_list = sorted([int(x.split('.')[0]) for x in imgs_list])
+        imgs_list = [str(x) + '.jpg' for x in imgs_list]
+    if shuffle:
+        np.random.shuffle(imgs_list)
 
     batch_no = 0
     new_batch = []
@@ -33,7 +37,7 @@ def make_batches_and_save(path, output_path=None, batch_type='train',
         if batch_type == 'train':
             Y.append(0 if img_name.split('.')[0] == 'dog' else 1)
 
-        if (ix + 1) % 16 == 0:
+        if (ix + 1) % batch_size == 0:
 
             if batch_type == 'train':
                 save_to_file(output_path + str(batch_no) + '.npz', new_batch, Y)
@@ -50,6 +54,6 @@ def make_batches_and_save(path, output_path=None, batch_type='train',
 
 
 if __name__ == '__main__':
-    make_batches_and_save('./datasets/train', './datasets/train_set')
+    make_batches_and_save('./datasets/train', './datasets/train_set', batch_size=64)
     make_batches_and_save('./datasets/test', './datasets/test_set',
                           batch_type='test', batch_size=32, shuffle=False)
