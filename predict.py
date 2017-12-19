@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from make_file import make_sub
 
 
-def predict(model_path):
+def predict(model_path, batch_size):
     Z, model_params = model()
     Y_hat = tf.sigmoid(Z)
     X = model_params['input_layer']
@@ -15,16 +15,18 @@ def predict(model_path):
     Y = []
     with tf.Session() as sess:
         saver.restore(sess, model_path)
-        for i in range(782):
+        for i in range(12500//batch_size+1):
             y = sess.run(Y_hat, feed_dict={X: next(test_gen)})
-            y[y < 0.5] = 1 - y[y < 0.5]
+            y = 1 - y
+            print(y.shape, end='\t')
             Y.append(y)
+            print(len(Y))
     Y = np.concatenate(Y)
     print(Y.shape)
     return Y
 
 
 if __name__ == '__main__':
-    Y = predict('./models/model1000/model.ckpt')
+    Y = predict('./models/model1000/model.ckpt', 32)
     np.save('out.npy', Y)
     make_sub('sub_1.csv')
