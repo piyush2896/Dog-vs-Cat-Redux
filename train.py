@@ -14,7 +14,7 @@ def train():
     Y = tf.expand_dims(Y_true_, 1)
 
     loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=Z, labels=Y))
-    train_step = tf.train.AdamOptimizer(1e-3).minimize(loss)
+    train_step = tf.train.AdamOptimizer(1e-4).minimize(loss)
 
     saver = tf.train.Saver()
 
@@ -34,12 +34,12 @@ def train():
                 else:
                     sess.run([train_step], feed_dict={X: X_true, Y_true_: Y_true})
 
-                if ix % 100 == 0:
+                if ix % 300 == 0:
                     path = './models/model' + (str(ix))
                     os.makedirs(path)
                     saver.save(sess, path + '/model.ckpt')
 
-                if ix == 1000:
+                if ix == 3000:
                     break
         finally:
             sess.close()

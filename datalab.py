@@ -30,7 +30,7 @@ class DataLabTrain(object):
     def generator(self):
         while 1:
             X, Y = self._load_files()
-            for i in range(self.load_at_a_time):
+            for i in range(len(X)):
                 yield X[i] / 255, Y[i]
 
 

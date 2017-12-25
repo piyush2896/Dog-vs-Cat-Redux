@@ -58,7 +58,7 @@ def model():
     params_dict['expand'] = X_
 
     # layer 1
-    A1, params_dict['conv_1a'] = conv_layer(X_, 1, 32, 1, 'a', padding='SAME', strides=(1, 1))
+    A1, params_dict['conv_1a'] = conv_layer(X_, 1, 64, 1, 'a', padding='SAME', strides=(1, 1))
     params_dict['conv_1a_out'] = A1
 
     A2 = tf.nn.max_pool(A1, ksize=(1, 5, 5, 1), strides=(1, 5, 5, 1),
@@ -73,7 +73,7 @@ def model():
     params_dict['bn_1a'] = A2_bn
 
     # layer 2
-    A3, params_dict['conv_1b'] = conv_layer(A2, 32, 64, 1, 'b')
+    A3, params_dict['conv_1b'] = conv_layer(A2, 64, 128, 1, 'b')
     params_dict['conv_1b_out'] = A3
 
     A4 = tf.nn.max_pool(A3, ksize=(1, 5, 5, 1), strides=(1, 5, 5, 1),
@@ -88,7 +88,7 @@ def model():
     params_dict['bn_1b'] = A4_bn
 
     # layer 3
-    A5, params_dict['conv_1c'] = conv_layer(A4, 64, 128, 1, 'c')
+    A5, params_dict['conv_1c'] = conv_layer(A4, 128, 256, 1, 'c')
     params_dict['conv_1c_out'] = A5
     
     A6 = tf.nn.max_pool(A5, ksize=(1, 5, 5, 1), strides=(1, 5, 5, 1),
@@ -96,14 +96,14 @@ def model():
     params_dict['pool_1_c_out'] = A6
 
     # layer 4
-    A7, params_dict['conv_1d'] = conv_layer(A6, 128, 256, 1, 'd')
+    A7, params_dict['conv_1d'] = conv_layer(A6, 256, 512, 1, 'd')
     params_dict['conv_1d_out'] = A7
     A8 = tf.nn.max_pool(A7, ksize=(1, 5, 5, 1), strides=(1, 5, 5, 1),
                         padding='SAME', name='pool_1_d')
     params_dict['pool_1_d'] = A8
 
     # layer 5
-    A8, params_dict['conv_1e'] = conv_layer(A7, 256, 512, 1, 'e')
+    A8, params_dict['conv_1e'] = conv_layer(A7, 512, 1024, 1, 'e')
     params_dict['conv_1e_out'] = A8
 
     A9 = tf.nn.max_pool(A8, ksize=(1, 5, 5, 1), strides=(1, 5, 5, 1),
@@ -115,17 +115,25 @@ def model():
     params_dict['flatten_out'] = A10
 
     # layer 7
-    A11, params_dict['dense_2a'] = dense_layer(A10, 1*1*512, 1024, 2, 'a')
+    A11, params_dict['dense_2a'] = dense_layer(A10, 1*1*1024, 2048, 2, 'a')
     A12 = tf.nn.dropout(A11, keep_prob=0.8)
     params_dict['dense_2a_out'] = A11
     params_dict['dropout_2a'] = A12
 
     # layer 8
-    A13, params_dict['dense_2b'] = dense_layer(A12, 1024, 1024, 2, 'b')
+    A13, params_dict['dense_2b'] = dense_layer(A12, 2048, 2048, 2, 'b')
     params_dict['dense_2b_out'] = A13
 
     # layer 9
-    Z, params_dict['dense_2c'] = dense_layer_wo_non_lin(A12, 1024, 1, 2, 'c')
+    A14, params_dict['dense_2c'] = dense_layer(A13, 2048, 1024, 2, 'c')
+    params_dict['dense_2c_out'] = A14
+
+    # layer 10
+    A15, params_dict['dense_2d'] = dense_layer(A14, 1024, 512, 2, 'd')
+    params_dict['dense_2d_out'] = A15
+
+    # layer 11
+    Z, params_dict['dense_2e'] = dense_layer_wo_non_lin(A15, 512, 1, 2, 'e')
     return Z, params_dict
 
 
