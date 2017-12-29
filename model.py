@@ -51,14 +51,14 @@ def dense_layer(A_prev, in_prev, out, stage, block):
 
 
 def model():
-    X = tf.placeholder(dtype=tf.float32, shape=[None, 64, 64], name='input_layer')
-    X_ = tf.expand_dims(X, axis=3)
+    X = tf.placeholder(dtype=tf.float32, shape=[None, 64, 64, 3], name='input_layer')
+    #X_ = tf.expand_dims(X, axis=3)
     params_dict = {}
     params_dict['input_layer'] = X
-    params_dict['expand'] = X_
+    #params_dict['expand'] = X_
 
     # layer 1
-    A1, params_dict['conv_1a'] = conv_layer(X_, 1, 64, 1, 'a', padding='SAME', strides=(1, 1))
+    A1, params_dict['conv_1a'] = conv_layer(X, 3, 64, 1, 'a', padding='SAME', strides=(1, 1))
     params_dict['conv_1a_out'] = A1
 
     A2 = tf.nn.max_pool(A1, ksize=(1, 5, 5, 1), strides=(1, 5, 5, 1),
