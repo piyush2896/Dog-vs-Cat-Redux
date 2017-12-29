@@ -5,7 +5,10 @@ from datalab import DataLabTrain, DataLabTest
 import os
 
 
-def train():
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+
+def train(n_iter):
     Z, model_params = model()
     Y_hat = tf.sigmoid(Z)
 
@@ -14,36 +17,38 @@ def train():
     Y = tf.expand_dims(Y_true_, 1)
 
     loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=Z, labels=Y))
-    train_step = tf.train.AdamOptimizer(1e-4).minimize(loss)
+    train_step = tf.train.AdamOptimizer(1e-2).minimize(loss)
 
     saver = tf.train.Saver()
 
     with tf.Session() as sess:
         try:
-            train_gen = DataLabTrain('./datasets/train_set/').generator()
             sess.run(tf.global_variables_initializer())
             sess.run(tf.local_variables_initializer())
+            for i in range(n_iter):
+                train_dl = DataLabTrain('./datasets/train_set/')
+                train_gen = train_dl.generator()
+                dev_dl = DataLabTrain('./datasets/dev_set/')
+                dev_gen = dev_dl.generator()
 
-            ix = 0
-            for X_true, Y_true in train_gen:
-                ix += 1
-                if ix % 10 == 0:
-                    l, y = sess.run([loss, Y_hat], feed_dict={X:X_true, Y:Y_true})
-                    acc = np.mean(y.astype('int32') == Y_true.astype('int32'))
-                    print('epoch: ' + str(ix) + ' loss: ' + str(l) + ' accuracy: ' + str(acc))
-                else:
-                    sess.run([train_step], feed_dict={X: X_true, Y_true_: Y_true})
-
-                if ix % 300 == 0:
-                    path = './models/model' + (str(ix))
-                    os.makedirs(path)
-                    saver.save(sess, path + '/model.ckpt')
-
-                if ix == 3000:
-                    break
+                count = 0
+                for X_true, Y_true in train_gen:
+                    count += 1
+                    sess.run(train_step, feed_dict={X:X_true, Y_true_: Y_true})
+                    print('{}% completed'.format(round(count / train_dl.max_len * 100, 2)), end='\r')
+                print()
+                count = 0
+                l = 0
+                for X_true, Y_true in dev_gen:
+                    count += 1
+                    l += sess.run(loss, feed_dict={X:X_true, Y_true_: Y_true})
+                print('Epoch: {}\tLoss: {}'.format(i, l / count), end='\r')
+                print()
+                saver.save(sess, './models/dog-vs-cat.ckpt')
+                print("Model Saved")
         finally:
             sess.close()
 
 
 if __name__ == '__main__':
-    train()
+    train(n_iter=100)
