@@ -27,6 +27,6 @@ def predict(model_path, batch_size):
 
 
 if __name__ == '__main__':
-    Y = predict('./models/model2400/model.ckpt', 32)
+    Y = predict('./models/dog-vs-cat.ckpt', 16)
     np.save('out.npy', Y)
     make_sub('sub_1.csv')
