@@ -20,7 +20,7 @@ def predict(model_path, batch_size):
             y = 1 - y
             print(y.shape, end='\t')
             Y.append(y)
-            print(len(Y))
+            print(len(Y), end='\r')
     Y = np.concatenate(Y)
     print(Y.shape)
     return Y
